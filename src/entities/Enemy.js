@@ -54,7 +54,7 @@ export const ENEMY_TYPES = {
   warden: {
     texture: 'skeleton',
     hp: 420,
-    speed: 46,
+    speed: 78,
     damage: 2,
     xp: 30,
     body: [40, 46],
@@ -144,14 +144,17 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
       }
 
       if (this.def.boss) {
-        // charge at the player, then recover
+        // charge at the player, then recover; enrage when the player runs
         if (t > this.lungeAt) {
-          this.lungeAt = t + 2600;
-          this.chargeUntil = t + 420;
+          this.lungeAt = t + 1800;
+          this.chargeUntil = t + 600;
         }
         if (this.chargeUntil && t < this.chargeUntil) {
-          vx *= 2.6;
-          vy *= 2.6;
+          vx *= 3.6;
+          vy *= 3.6;
+        } else if (dist > 300) {
+          vx *= 1.5;
+          vy *= 1.5;
         }
       }
     }

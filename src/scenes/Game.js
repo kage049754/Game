@@ -678,15 +678,11 @@ export default class GameScene extends Phaser.Scene {
 
     if (this.spawnLeft <= 0 && alive === 0) {
       this.waveState = 'resting';
-      this.restUntil = t + 1800;
+      this.restUntil = t + 1500;
       this.score += 60 + this.wave * 25;
       this.collectXp(3);
-      if (this.wave % 2 === 0) {
-        this.banner('WAVE CLEARED', '+1 HEART', COLORS.mint);
-        this.player.heal(1);
-      } else {
-        this.banner('WAVE CLEARED', '', COLORS.mint);
-      }
+      this.banner('WAVE CLEARED', '+1 HEART', COLORS.mint);
+      this.player.heal(1);
     }
   }
 
@@ -709,7 +705,7 @@ export default class GameScene extends Phaser.Scene {
       });
     } else {
       this.spawnLeft = 5 + Math.floor(n * 2.1);
-      this.spawnInterval = Math.max(0.22, 0.85 - n * 0.05);
+      this.spawnInterval = Math.max(0.22, 0.72 - n * 0.04);
       this.banner(`WAVE ${n}`, '', COLORS.gold);
       audio.waveStart();
     }
@@ -764,17 +760,21 @@ export default class GameScene extends Phaser.Scene {
     const boss = this.boss;
     if (!boss || !boss.active) return;
     if (t > this.bossSpecialAt) {
-      this.bossSpecialAt = t + 2500;
-      // radial bone burst
-      const count = 10;
-      const base = Math.random() * Math.PI * 2;
-      for (let i = 0; i < count; i++) {
-        const angle = base + (i / count) * Math.PI * 2;
-        const b = this.getBullet(this.enemyBullets, 'bulletEnemy');
-        b.fire(boss.x, boss.y, angle, this.player.stats, { enemy: true, speed: 190, damage: 1, life: 4200 });
-      }
-      this.fxIce.explode(8, boss.x, boss.y);
-      audio.shoot();
+      this.bossSpecialAt = t + 2100;
+      // telegraph, then a radial bone burst
+      this.tweens.add({ targets: boss.glow, alpha: 0.95, yoyo: true, duration: 170 });
+      this.time.delayedCall(170, () => {
+        if (!boss.active || this.gameOver) return;
+        const count = 12;
+        const base = Math.random() * Math.PI * 2;
+        for (let i = 0; i < count; i++) {
+          const angle = base + (i / count) * Math.PI * 2;
+          const b = this.getBullet(this.enemyBullets, 'bulletEnemy');
+          b.fire(boss.x, boss.y, angle, this.player.stats, { enemy: true, speed: 235, damage: 1, life: 4200 });
+        }
+        this.fxIce.explode(10, boss.x, boss.y);
+        audio.shoot();
+      });
     }
     if (t > this.bossSummonAt) {
       this.bossSummonAt = t + 6000;
@@ -879,8 +879,10 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
-  onEnemyBulletHitsPlayer(bullet, player) {
-    if (!bullet.active || player.dead) return;
+  // Phaser normalises mixed group/sprite overlaps to (sprite, groupChild),
+  // so the player arrives first here.
+  onEnemyBulletHitsPlayer(player, bullet) {
+    if (!player || !bullet || !bullet.active || player.dead) return;
     bullet.kill();
     player.takeDamage(bullet.damage, bullet.x, bullet.y);
   }
@@ -963,8 +965,8 @@ export default class GameScene extends Phaser.Scene {
     this.kills += 1;
     this.score += 500 + this.wave * 50;
     this.boss = null;
-    this.banner('WARDEN SLAIN', '+1 HEART, +30 SOULS', COLORS.gold);
-    this.player.heal(1);
+    this.banner('WARDEN SLAIN', '+2 HEARTS, +30 SOULS', COLORS.gold);
+    this.player.heal(2);
     this.cameras.main.flash(400, 255, 240, 200);
   }
 
