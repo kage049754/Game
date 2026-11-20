@@ -18,6 +18,16 @@ class AudioEngine {
     this.step = 0;
     this.nextStepTime = 0;
     this.timer = null;
+    this.lastSfx = {};
+  }
+
+  // Cheap rate limit: returns true if the sound may play now.
+  allow(name, minGap = 0.035) {
+    if (!this.ctx) return false;
+    const now = this.ctx.currentTime;
+    if (this.lastSfx[name] && now - this.lastSfx[name] < minGap) return false;
+    this.lastSfx[name] = now;
+    return true;
   }
 
   init() {
@@ -115,13 +125,16 @@ class AudioEngine {
   // ---- game sounds ------------------------------------------------------
 
   shoot() {
+    if (!this.allow('shoot', 0.04)) return;
     this.tone({ freq: 880, to: 420, type: 'square', dur: 0.07, vol: 0.045 });
     this.noise({ dur: 0.04, vol: 0.03, freq: 3200, type: 'highpass' });
   }
   hit() {
+    if (!this.allow('hit', 0.03)) return;
     this.noise({ dur: 0.06, vol: 0.07, freq: 2200, to: 700 });
   }
   kill() {
+    if (!this.allow('kill', 0.045)) return;
     this.tone({ freq: 180, to: 55, type: 'sawtooth', dur: 0.18, vol: 0.07 });
     this.noise({ dur: 0.16, vol: 0.06, freq: 900, to: 200 });
   }
@@ -138,6 +151,7 @@ class AudioEngine {
     this.tone({ freq: 200, to: 620, type: 'triangle', dur: 0.16, vol: 0.05 });
   }
   gem(pitch = 0) {
+    if (!this.allow('gem', 0.03)) return;
     this.tone({ freq: 880 + pitch * 60, to: 1320 + pitch * 60, type: 'sine', dur: 0.08, vol: 0.05 });
   }
   levelUp() {

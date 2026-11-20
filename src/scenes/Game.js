@@ -528,14 +528,25 @@ export default class GameScene extends Phaser.Scene {
     this.physics.pause();
     audio.click();
     this.overlay = this.add.container(0, 0).setScrollFactor(0).setDepth(DEPTH.modal);
-    const dim = this.add.rectangle(W / 2, H / 2, W, H, 0x05040a, 0.72).setInteractive();
+    const dim = this.add.rectangle(W / 2, H / 2, W, H, 0x05040a, 0.8).setInteractive();
+    const panel = this.add.rectangle(W / 2, H / 2, 460, 210, 0x161125, 0.98).setStrokeStyle(2, 0x3d3054);
     const title = this.add
-      .text(W / 2, H / 2 - 40, 'PAUSED', { fontFamily: FONT, fontSize: '22px', color: COLORS.mint })
+      .text(W / 2, H / 2 - 62, 'PAUSED', { fontFamily: FONT, fontSize: '22px', color: COLORS.mint })
+      .setOrigin(0.5);
+    const secs = Math.floor(this.runTime / 1000);
+    const info = this.add
+      .text(W / 2, H / 2 - 12, `WAVE ${Math.max(1, this.wave)}   LV ${this.player.level}   SCORE ${this.score}\n${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')} SURVIVED`, {
+        fontFamily: FONT,
+        fontSize: '8px',
+        color: COLORS.dim,
+        align: 'center',
+        lineSpacing: 12
+      })
       .setOrigin(0.5);
     const sub = this.add
-      .text(W / 2, H / 2 + 14, 'P or ESC  RESUME      M  SOUND', { fontFamily: FONT, fontSize: '8px', color: COLORS.dim })
+      .text(W / 2, H / 2 + 56, 'P or ESC  RESUME      M  SOUND', { fontFamily: FONT, fontSize: '8px', color: COLORS.faint })
       .setOrigin(0.5);
-    this.overlay.add([dim, title, sub]);
+    this.overlay.add([dim, panel, title, info, sub]);
     dim.on('pointerdown', () => this.resumeGame());
   }
 
@@ -569,7 +580,7 @@ export default class GameScene extends Phaser.Scene {
     this.updateBullets(dt, t);
     this.updateGems(dt, t);
 
-    if (Phaser.Input.Keyboard.JustDown(this.keys.SPACE)) this.tryPlayerDash();
+    if (this.keys && Phaser.Input.Keyboard.JustDown(this.keys.SPACE)) this.tryPlayerDash();
 
     this.updateHud();
     this.drawStick();
@@ -777,15 +788,15 @@ export default class GameScene extends Phaser.Scene {
     this.fxSpawn.explode(count, x, y);
   }
 
-  spawnDeathDecal(x, y, size = 1) {
+  spawnDeathDecal(x, y, size = 1, texture = 'splat') {
     const stain = this.add
-      .image(x + Phaser.Math.Between(-5, 5), y + Phaser.Math.Between(0, 6), 'px')
+      .image(x + Phaser.Math.Between(-4, 4), y + Phaser.Math.Between(2, 10), texture)
       .setDepth(DEPTH.decal)
-      .setTint(0x3a1f2c)
-      .setAlpha(0.5)
-      .setScale(Phaser.Math.FloatBetween(2, 4) * size)
-      .setAngle(Phaser.Math.Between(0, 90));
-    this.tweens.add({ targets: stain, alpha: 0, duration: 12000, delay: 3000, onComplete: () => stain.destroy() });
+      .setAlpha(0.45)
+      .setScale(Phaser.Math.FloatBetween(1, 1.8) * size)
+      .setFlipX(Math.random() < 0.5)
+      .setFlipY(Math.random() < 0.5);
+    this.tweens.add({ targets: stain, alpha: 0, duration: 9000, delay: 4000, onComplete: () => stain.destroy() });
   }
 
   // ---------------------------------------------------------------------
@@ -832,13 +843,13 @@ export default class GameScene extends Phaser.Scene {
       .image(x, y, 'glowMint')
       .setDepth(DEPTH.fx)
       .setBlendMode(Phaser.BlendModes.ADD)
-      .setScale(0.22)
-      .setAlpha(0.8);
+      .setScale(0.13)
+      .setAlpha(0.55);
     this.tweens.add({
       targets: flash,
-      scale: 0.5,
+      scale: 0.3,
       alpha: 0,
-      duration: 110,
+      duration: 90,
       onComplete: () => flash.destroy()
     });
     audio.shoot();

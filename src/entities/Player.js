@@ -61,6 +61,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.dashUntil = this.t + 170;
     this.dashReadyAt = this.t + this.stats.dashCooldown;
     this.invulnUntil = Math.max(this.invulnUntil, this.t + this.stats.dashInvuln);
+    // phase through the horde while dashing so you never get wedged in a blob
+    this.body.checkCollision.none = true;
     this.setVelocity(dir.x * this.stats.dashPower, dir.y * this.stats.dashPower);
     this.scene.cameraShake(60, 0.003);
     this.scene.dashTrail(this);
@@ -85,6 +87,10 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       );
     } else if (t > this.dashUntil - 30) {
       this.setVelocity(this.dashDir.x * this.stats.dashPower * 0.35, this.dashDir.y * this.stats.dashPower * 0.35);
+    }
+
+    if (this.body.checkCollision.none && t > this.dashUntil) {
+      this.body.checkCollision.none = false;
     }
 
     if (moveX !== 0) this.facing = moveX > 0 ? 1 : -1;

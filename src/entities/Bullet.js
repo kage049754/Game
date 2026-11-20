@@ -35,7 +35,7 @@ export default class Bullet extends Phaser.Physics.Arcade.Image {
     const v = enemy ? speed || 250 : stats.bulletSpeed;
     this.scene.physics.velocityFromRotation(angle, v, this.body.velocity);
     this.lifeUntil = this.scene.runTime + (life || (enemy ? 4000 : stats.bulletLife));
-    this.setScale(1);
+    this.setScale(enemy ? 1.15 : 1.2);
     this.setTint(enemy ? 0xffffff : 0xffffff);
   }
 

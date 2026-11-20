@@ -214,7 +214,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     const scene = this.scene;
     const emitter = scene[this.def.particles] || scene.fxBone;
     emitter.explode(this.def.burst, this.x, this.y);
-    scene.spawnDeathDecal(this.x, this.y, this.def.boss ? 2 : 1);
+    scene.spawnDeathDecal(this.x, this.y, this.def.boss ? 2 : 1, this.def.particles === 'fxBone' ? 'splatBone' : 'splat');
 
     if (this.def.boss) {
       audio.boss();

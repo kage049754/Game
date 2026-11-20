@@ -108,15 +108,15 @@ export const ART = {
 
   bullet: [
     '.66.',
-    '6666',
-    '6666',
+    '6ww6',
+    '6ww6',
     '.66.'
   ],
 
   bulletEnemy: [
     '.99.',
-    '9aa9',
-    '9aa9',
+    '9ww9',
+    '9ww9',
     '.99.'
   ],
 
@@ -171,6 +171,26 @@ export const ART = {
     '.mmm.',
     '..n..',
     '..n..'
+  ],
+
+  splat: [
+    '..aa...',
+    '.aaaa.a',
+    'aaaaaaa',
+    '.aaaaa.',
+    'aa.aaaa',
+    '.aa.aa.',
+    'a.....a'
+  ],
+
+  splatBone: [
+    '..55...',
+    '.5555.5',
+    '5555555',
+    '.55555.',
+    '55.5555',
+    '.55.55.',
+    '5.....5'
   ],
 
   skull: [
@@ -412,7 +432,7 @@ export function makeParticleTexture(scene, key = 'px') {
 /** Create every texture the game needs. Called from BootScene. */
 // Gameplay sprites are drawn at 3x so the characters read clearly at 960x540;
 // bolts and HUD glyphs stay chunky-but-small at 2x.
-const PX = { bullet: 2, bulletEnemy: 2, heart: 2, heartEmpty: 2, skull: 2, crown: 2, flame: 2, torch: 2, particle: 2, gem: 2, gemBig: 2 };
+const PX = { splat: 3, splatBone: 3, bullet: 2, bulletEnemy: 2, heart: 2, heartEmpty: 2, skull: 2, crown: 2, flame: 2, torch: 2, particle: 2, gem: 2, gemBig: 2 };
 
 export function buildArt(scene) {
   for (const [key, rows] of Object.entries(ART)) {

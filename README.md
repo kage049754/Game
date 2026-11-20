@@ -9,6 +9,8 @@ the waves — a crowned **Bone Warden** shows up every fifth one.
 
 ![Gameplay](docs/gameplay.png)
 
+![Level up](docs/upgrades.png)
+
 ## Play
 
 ```bash
